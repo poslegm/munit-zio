@@ -6,7 +6,13 @@ import scala.annotation.nowarn
 
 abstract class ZIOSuite extends FunSuite {
 
-  protected val runtime: Runtime[Any] = Runtime.global
+  protected val runtime: Runtime[Any] = Runtime.global.withReportFailure { cause =>
+    cause.dieOption.foreach {
+      // suppress munit reports duplication
+      case _: ComparisonFailException =>
+      case other                      => System.err.println(cause.prettyPrint)
+    }
+  }
 
   override def munitValueTransforms: List[ValueTransform] =
     super.munitValueTransforms ::: List(munitZIOTransform)
