@@ -42,21 +42,23 @@ lazy val root = project
     scalacOptions := Seq(
       "-Xfatal-warnings",
       "-deprecation",
-      "-unchecked",
-      "-Xcheckinit",
-      "-Xlint:_",
-      "-Wdead-code",
-      "-Wextra-implicit",
-      "-Wunused:_",
-      "-Wvalue-discard"
+      "-unchecked"
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, _)) => Seq("-Xsource:3")
+        case Some((2, _)) =>
+          Seq(
+            "-Xsource:3",
+            "-Wdead-code",
+            "-Wextra-implicit",
+            "-Wunused",
+            "-Ywarn-value-discard"
+          )
         case _            => Seq("-explain", "-indent", "-new-syntax")
       }
     },
     crossScalaVersions := Seq(scala3, scala212, scala213),
+    libraryDependencies := Seq(munit, zio),
     testFrameworks += new TestFramework("munit.Framework")
   )
 
