@@ -91,12 +91,12 @@ class ZAssertionsSpec extends ZSuite:
     interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
   }
 
-  test("interceptMessageIO works (failed assertion: different message)".fail) {
+  test("interceptFailureMessageZ works (failed assertion: different message)".fail) {
     val zio = ZIO.fail(new IllegalArgumentException("oops"))
     interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
   }
 
-  test("interceptMessageIO works (failed assertion: IO does not fail)".fail) {
+  test("interceptFailureMessageZ works (failed assertion: IO does not fail)".fail) {
     val zio = ZIO.succeed(42)
     interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
   }

@@ -6,13 +6,13 @@ Integration library between [MUnit](https://scalameta.org/munit) and
 ### Goals
 
 + Suite
-- Assertions (with syntax)
++ Assertions
 - Fixtures
-- Clear logs
++ Clear logs
 - Layers providing
 - Custom Errors handling
 - Scala Steward
-- Examples
+- Examples in README
 
 Inspired by
 [munit-cats-effect](https://github.com/typelevel/munit-cats-effect).
