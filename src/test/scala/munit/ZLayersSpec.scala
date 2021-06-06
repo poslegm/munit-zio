@@ -30,7 +30,7 @@ class ZLayerSpec extends ZSuite:
 
   layersFixture.testZ("auto provide layer") {
     val effect = write *> write *> fetch
-    assertEqualsZ(effect, 3)
+    assertEqualsZ(effect, 2)
   }
 
 object SampleDependencies:

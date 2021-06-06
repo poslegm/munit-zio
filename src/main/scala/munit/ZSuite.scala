@@ -2,23 +2,20 @@ package munit
 
 import zio.*
 
-import scala.concurrent.Future
+import java.util.concurrent.ExecutionException
 
-abstract class ZSuite extends FunSuite with ZAssertions with ZFixtures with ZFixtureSyntax:
+abstract class ZSuite
+    extends FunSuite
+    with ZAssertions
+    with ZFixtures
+    with ZFixtureSyntax
+    with ZRuntime:
 
-  protected val runtime: Runtime[Any] = Runtime.global.withReportFailure { cause =>
-    cause.dieOption.foreach {
-      // suppress munit reports duplication
-      case _: FailExceptionLike[?] =>
-      case other                   => System.err.println(cause.prettyPrint)
-    }
-  }
+  def testZ[E](name: String)(body: IO[E, Any])(using Location): Unit =
+    testZ(TestOptions(name))(body)
 
-  protected def unsafeRunToFuture[E, A](effect: IO[E, A]): Future[A] =
-    runtime.unsafeRunToFuture(effect.mapError {
-      case t: Throwable => t
-      case other        => ZIOError(other)
-    })
+  def testZ[E](options: TestOptions)(body: IO[E, Any])(using Location): Unit =
+    test(options)(unsafeRunToFuture(body))
 
   override def munitValueTransforms: List[ValueTransform] =
     super.munitValueTransforms ::: List(munitZIOTransform)
@@ -32,12 +29,3 @@ abstract class ZSuite extends FunSuite with ZAssertions with ZFixtures with ZFix
       "ZIO",
       { case z: ZIO[?, ?, ?] => throw WrongTestMethodError() }
     )
-
-  def testZ[E](name: String)(body: IO[E, Any])(using Location): Unit =
-    testZ(TestOptions(name))(body)
-
-  def testZ[E](options: TestOptions)(body: IO[E, Any])(using Location): Unit =
-    test(options)(unsafeRunToFuture(body))
-
-  private final case class ZIOError(cause: Any)
-      extends Exception(s"ZIO failed with ${cause.toString}")
