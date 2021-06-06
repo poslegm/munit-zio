@@ -7,12 +7,13 @@ Integration library between [MUnit](https://scalameta.org/munit) and
 
 + Suite
 + Assertions
-- Resource Fixtures
-+ Clear logs
-- Layers providing
-- Custom Errors handling
++ Resource Fixtures
+- Clear logs
++ Layers providing
++ Custom Errors handling
 - Scala Steward
 - Examples in README
+- Publish to Maven Central
 
 Inspired by
 [munit-cats-effect](https://github.com/typelevel/munit-cats-effect).
