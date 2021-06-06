@@ -16,17 +16,3 @@ class ZSuiteSpec extends ZSuite:
       res <- ZIO(x + 1)
     yield assertEquals(res, 43)
   }
-
-  testZIO("ZIO success on testZIO") {
-    for
-      x   <- ZIO(41)
-      res <- ZIO(x + 1)
-    yield assertEquals(res, 42)
-  }
-
-  testZIO("ZIO fail on testZIO".fail) {
-    for
-      x   <- ZIO(41)
-      res <- ZIO(x + 1)
-    yield assertEquals(res, 43)
-  }
