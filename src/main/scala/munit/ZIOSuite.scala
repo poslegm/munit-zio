@@ -1,10 +1,8 @@
 package munit
 
-import zio._
+import zio.*
 
-import scala.annotation.nowarn
-
-abstract class ZIOSuite extends FunSuite {
+abstract class ZIOSuite extends FunSuite with ZIOTests {
 
   protected val runtime: Runtime[Any] = Runtime.global.withReportFailure { cause =>
     cause.dieOption.foreach {
