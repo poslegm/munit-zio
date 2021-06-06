@@ -46,57 +46,57 @@ class ZAssertionsSpec extends ZSuite:
     assertNoDiffZ(zio, "another string")
   }
 
-  testZ("interceptFailureZ works (successful assertion)") {
+  testZ("interceptFailure works (successful assertion)") {
     val zio = ZIO.fail(new IllegalArgumentException("BOOM!"))
-    interceptFailureZ[IllegalArgumentException](zio)
+    zio.interceptFailure[IllegalArgumentException]
   }
 
-  testZ("interceptDefectZ works (successful assertion)") {
+  testZ("interceptDefect works (successful assertion)") {
     val zio = ZIO.die(new IllegalArgumentException("BOOM!"))
-    interceptDefectZ[IllegalArgumentException](zio)
+    zio.interceptDefect[IllegalArgumentException]
   }
 
-  testZ("interceptFailureZ works (failed assertion: different exception)".fail) {
+  testZ("interceptFailure works (failed assertion: different exception)".fail) {
     val zio = ZIO.fail(new Exception("BOOM!"))
-    interceptFailureZ[IllegalArgumentException](zio)
+    zio.interceptFailure[IllegalArgumentException]
   }
 
-  testZ("interceptDefectZ works (failed assertion: different exception)".fail) {
+  testZ("interceptDefect works (failed assertion: different exception)".fail) {
     val zio = ZIO.die(new Exception("BOOM!"))
-    interceptFailureZ[IllegalArgumentException](zio)
+    zio.interceptFailure[IllegalArgumentException]
   }
 
-  testZ("interceptFailureZ works (failed assertion: effect does not fail)".fail) {
+  testZ("interceptFailure works (failed assertion: effect does not fail)".fail) {
     val zio = ZIO.succeed(42)
-    interceptFailureZ[IllegalArgumentException](zio)
+    zio.interceptFailure[IllegalArgumentException]
   }
 
-  testZ("interceptDefectZ works (failed assertion: effect does not fail)".fail) {
+  testZ("interceptDefect works (failed assertion: effect does not fail)".fail) {
     val zio = ZIO.succeed(42)
-    interceptDefectZ[IllegalArgumentException](zio)
+    zio.interceptDefect[IllegalArgumentException]
   }
 
-  testZ("interceptDefectZ works (failed assertion: effect does not die)".fail) {
+  testZ("interceptDefect works (failed assertion: effect does not die)".fail) {
     val zio = ZIO.fail(new IllegalArgumentException("fail not die"))
-    interceptDefectZ[IllegalArgumentException](zio)
+    zio.interceptDefect[IllegalArgumentException]
   }
 
-  testZ("interceptFailureMessageZ works (successful assertion)") {
+  testZ("interceptFailureMessage works (successful assertion)") {
     val zio = ZIO.fail(new IllegalArgumentException("BOOM!"))
-    interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
+    zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
 
-  testZ("interceptFailureMessageZ works (failed assertion: different exception)".fail) {
+  testZ("interceptFailureMessage works (failed assertion: different exception)".fail) {
     val zio = ZIO.fail(new Exception("BOOM!"))
-    interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
+    zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
 
-  testZ("interceptFailureMessageZ works (failed assertion: different message)".fail) {
+  testZ("interceptFailureMessage works (failed assertion: different message)".fail) {
     val zio = ZIO.fail(new IllegalArgumentException("oops"))
-    interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
+    zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
 
-  testZ("interceptFailureMessageZ works (failed assertion: IO does not fail)".fail) {
+  testZ("interceptFailureMessage works (failed assertion: ZIO does not fail)".fail) {
     val zio = ZIO.succeed(42)
-    interceptFailureMessageZ[IllegalArgumentException]("BOOM!")(zio)
+    zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
