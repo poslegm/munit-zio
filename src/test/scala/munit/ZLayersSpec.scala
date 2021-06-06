@@ -5,7 +5,7 @@ import zio.*
 import SampleDependencies.*
 
 class ZLayerSpec extends ZSuite:
-  test("simple layers providing") {
+  testZ("simple layers providing") {
     val deps = ZLayer.succeed(A()) >>> ZLayer.fromService[A, B](B(_))
 
     val effect = ZIO.service[B].map(_.g)
@@ -18,14 +18,19 @@ class ZLayerSpec extends ZSuite:
     )
   }
 
-  layersFixture.test("fixture layers providing") { layers =>
+  layersFixture.testZ("fixture layers providing") { layers =>
     val effect = write *> write *> fetch
     assertEqualsZ(effect.provideLayer(layers), 2)
   }
 
-  layersFixture.test("fixture layers providing after clean") { layers =>
+  layersFixture.testZ("fixture layers providing after clean") { layers =>
     val effect = write *> write *> fetch
     assertEqualsZ(effect.provideLayer(layers), 2)
+  }
+
+  layersFixture.testZ("auto provide layer") {
+    val effect = write *> write *> fetch
+    effect.map(res => assertEquals(res, 2))
   }
 
 object SampleDependencies:
