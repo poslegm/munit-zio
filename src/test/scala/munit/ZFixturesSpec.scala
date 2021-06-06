@@ -38,11 +38,12 @@ class ZFixturesSpec extends ZSuite:
     assertZ(effect.provideLayer(deps))
   }
 
-  val rawZIOFunFixture = ZFunFixture(options => ZIO.succeed(s"acquired ${options.name}")) { str =>
-    putStrLn(s"cleanup [$str]").provideLayer(Console.live)
+  val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired ${options.name}")) {
+    str =>
+      putStrLn(s"cleanup [$str]").provideLayer(Console.live)
   }
 
-  val ZManagedFunFixture = ZFunFixture { options =>
+  val ZManagedFunFixture = ZTestLocalFixture { options =>
     ZManaged.make(ZIO.succeed(s"acquired ${options.name} with ZManaged")) { str =>
       putStrLn(s"cleanup [$str] with ZManaged").provideLayer(Console.live).orDie
     }
