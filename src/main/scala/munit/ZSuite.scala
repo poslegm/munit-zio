@@ -20,7 +20,7 @@ abstract class ZSuite
     *     b <- ZIO(2)
     *   yield a + b
     *
-    *   assertZ(effect, 3)
+    *   assertEqualsZ(effect, 3)
     * }
     *
     * }}}
