@@ -2,7 +2,7 @@ package munit
 
 import zio._
 
-class ZIOSuiteSpec extends ZIOSuite {
+class ZSuiteSpec extends ZSuite:
   test("ZIO success on standart test") {
     for
       x   <- ZIO(41)
@@ -30,4 +30,3 @@ class ZIOSuiteSpec extends ZIOSuite {
       res <- ZIO(x + 1)
     yield assertEquals(res, 43)
   }
-}

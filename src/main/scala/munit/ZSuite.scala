@@ -2,13 +2,13 @@ package munit
 
 import zio.*
 
-abstract class ZIOSuite extends FunSuite with ZIOTests {
+abstract class ZSuite extends FunSuite with ZTests with ZAssertions:
 
   protected val runtime: Runtime[Any] = Runtime.global.withReportFailure { cause =>
     cause.dieOption.foreach {
       // suppress munit reports duplication
-      case _: ComparisonFailException =>
-      case other                      => System.err.println(cause.prettyPrint)
+      case _: FailExceptionLike[?] =>
+      case other                   => System.err.println(cause.prettyPrint)
     }
   }
 
@@ -30,4 +30,3 @@ abstract class ZIOSuite extends FunSuite with ZIOTests {
 
   private final case class ZIOError(cause: Any)
       extends Exception(s"ZIO failed with ${cause.toString}")
-}
