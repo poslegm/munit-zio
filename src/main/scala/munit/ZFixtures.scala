@@ -1,6 +1,6 @@
 package munit
 
-import zio.{Task, TaskManaged, UIO, Exit, ZIO}
+import zio.{IO, Managed, UIO, Exit, ZIO}
 
 trait ZFixtures:
   self: ZSuite =>
@@ -30,13 +30,13 @@ trait ZFixtures:
     * }}}
     */
   object ZTestLocalFixture:
-    def apply[T](setup: TestOptions => Task[T])(teardown: T => Task[Unit]): FunFixture[T] =
+    def apply[E, A](setup: TestOptions => IO[E, A])(teardown: A => IO[E, Unit]): FunFixture[A] =
       FunFixture.async(
-        options => runtime.unsafeRunToFuture(setup(options)),
-        t => runtime.unsafeRunToFuture(teardown(t))
+        options => unsafeRunToFuture(setup(options)),
+        t => unsafeRunToFuture(teardown(t))
       )
 
-    def apply[T](create: TestOptions => TaskManaged[T]): FunFixture[T] =
+    def apply[E, A](create: TestOptions => Managed[E, A]): FunFixture[A] =
       var release: Exit[Any, Any] => UIO[Any] = null
       FunFixture.async(
         setup = { options =>
@@ -45,12 +45,11 @@ trait ZFixtures:
             _        <- ZIO.effectTotal { release = res.release }
             resource <- res.acquire
           yield resource
-          runtime.unsafeRunToFuture(effect)
+          unsafeRunToFuture(effect)
         },
         teardown = { resource =>
           val effect = release(Exit.succeed(resource)).unit
-
-          runtime.unsafeRunToFuture(effect)
+          unsafeRunToFuture(effect)
         }
       )
 
@@ -78,10 +77,10 @@ trait ZFixtures:
         )
     private case class Resource[T](content: T, acquire: Exit[Any, Any] => UIO[Any])
 
-    def apply[T](name: String, managed: TaskManaged[T]): Fixture[T] =
-      var resource: Resource[T] = null
-      new Fixture[T](name) {
-        def apply(): T =
+    def apply[E, A](name: String, managed: Managed[E, A]): Fixture[A] =
+      var resource: Resource[A] = null
+      new Fixture[A](name) {
+        def apply(): A =
           if resource == null then throw FixtureNotInstantiatedException(name) else resource.content
 
         override def beforeAll(): Unit =

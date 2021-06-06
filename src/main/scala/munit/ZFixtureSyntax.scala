@@ -10,7 +10,7 @@ trait ZFixtureSyntax:
       fixture.testZ(TestOptions(name))(body)
 
     def testZ[E](options: TestOptions)(body: T => IO[E, Any])(using Location): Unit =
-      fixture.test(options)(arg => runtime.unsafeRun(body(arg)))
+      fixture.test(options)(arg => unsafeRunToFuture(body(arg)))
 
   extension [R](fixture: FunFixture[ULayer[R]])
     def testZ(name: String)(body: RIO[R, Any])(using Location): Unit =

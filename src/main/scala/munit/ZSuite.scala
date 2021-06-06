@@ -14,6 +14,12 @@ abstract class ZSuite extends FunSuite with ZAssertions with ZFixtures with ZFix
     }
   }
 
+  protected def unsafeRunToFuture[E, A](effect: IO[E, A]): Future[A] =
+    runtime.unsafeRunToFuture(effect.mapError {
+      case t: Throwable => t
+      case other        => ZIOError(other)
+    })
+
   override def munitValueTransforms: List[ValueTransform] =
     super.munitValueTransforms ::: List(munitZIOTransform)
 
@@ -27,10 +33,11 @@ abstract class ZSuite extends FunSuite with ZAssertions with ZFixtures with ZFix
       { case z: ZIO[?, ?, ?] => throw WrongTestMethodError() }
     )
 
-  def testZ[E](name: String)(body: IO[E, Any])(using Location): Unit         =
+  def testZ[E](name: String)(body: IO[E, Any])(using Location): Unit =
     testZ(TestOptions(name))(body)
+
   def testZ[E](options: TestOptions)(body: IO[E, Any])(using Location): Unit =
-    test(options)(runtime.unsafeRun(body))
+    test(options)(unsafeRunToFuture(body))
 
   private final case class ZIOError(cause: Any)
       extends Exception(s"ZIO failed with ${cause.toString}")
