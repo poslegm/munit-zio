@@ -7,7 +7,7 @@ Integration library between [MUnit](https://scalameta.org/munit) and
 
 + Suite
 + Assertions
-- Fixtures
+- Resource Fixtures
 + Clear logs
 - Layers providing
 - Custom Errors handling

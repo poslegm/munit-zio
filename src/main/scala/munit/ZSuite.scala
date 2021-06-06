@@ -2,7 +2,7 @@ package munit
 
 import zio.*
 
-abstract class ZSuite extends FunSuite with ZTests with ZAssertions:
+abstract class ZSuite extends FunSuite with ZTests with ZAssertions with ZFixtures:
 
   protected val runtime: Runtime[Any] = Runtime.global.withReportFailure { cause =>
     cause.dieOption.foreach {
