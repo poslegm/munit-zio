@@ -10,13 +10,13 @@ trait ZFixtures {
     * Can be created from raw setup/teardown effects or from ZManaged.
     *
     * {{{
-    * val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired ${options.name}")) { str =>
-    *   putStrLn(s"cleanup [$str]").provideLayer(Console.live)
+    * val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired \${options.name}")) { str =>
+    *   putStrLn(s"cleanup [\$str]").provideLayer(Console.live)
     * }
     *
     * val ZManagedFunFixture = ZTestLocalFixture { options =>
-    *   ZManaged.make(ZIO.succeed(s"acquired ${options.name} with ZManaged")) { str =>
-    *     putStrLn(s"cleanup [$str] with ZManaged").provideLayer(Console.live).orDie
+    *   ZManaged.make(ZIO.succeed(s"acquired \${options.name} with ZManaged")) { str =>
+    *     putStrLn(s"cleanup [\$str] with ZManaged").provideLayer(Console.live).orDie
     *   }
     * }
     *
