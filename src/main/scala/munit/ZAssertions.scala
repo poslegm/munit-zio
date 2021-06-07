@@ -10,7 +10,7 @@ trait ZAssertions {
   /** Asserts that `ZIO[R, E, Boolean]` returns `true`.
     *
     * {{{
-    *   test("false OR true should be true") {
+    *   testZ("false OR true should be true") {
     *     val effect = ZIO.succeed(false || true)
     *     assertZ(effect, "boolean algebra check failed")
     *   }
@@ -30,7 +30,7 @@ trait ZAssertions {
     * unlike just `assertEqualsZ`.
     *
     * {{{
-    *   test("strings are the same") {
+    *   testZ("strings are the same") {
     *     val effect = ZIO.succeed("string")
     *     assertNoDiffZ(effect, "string", "different strings")
     *   }
@@ -52,7 +52,7 @@ trait ZAssertions {
 
   /** Asserts that `ZIO[R, E, A]` returns the same result as expected
     * {{{
-    *   test("strings are the same") {
+    *   testZ("strings are the same") {
     *     val effect = ZIO.succeed("string")
     *     assertEqualsZ(effect, "string", "different strings")
     *   }
@@ -74,7 +74,7 @@ trait ZAssertions {
 
   /** Asserts that `ZIO[R, E, A]` returns NOT the same result as expected
     * {{{
-    *   test("strings are the same") {
+    *   testZ("strings are the same") {
     *     val effect = ZIO.succeed("string")
     *     assertNotEqualsZ(effect, "another string", "same strings")
     *   }
@@ -98,7 +98,7 @@ trait ZAssertions {
 
     /** Asserts that `ZIO[R, E, Any]` should fail with provided exception `E`.
       * {{{
-      *   test("effect should fail") {
+      *   testZ("effect should fail") {
       *     val effect = ZIO.fail(new IllegalArgumentException("BOOM!"))
       *     effect.interceptFailure[IllegalArgumentException]
       *   }
@@ -117,7 +117,7 @@ trait ZAssertions {
 
     /** Asserts that `ZIO[R, E, Any]` should die with provided exception `E`.
       * {{{
-      *   test("effect should die") {
+      *   testZ("effect should die") {
       *     val effect = ZIO.die(new IllegalArgumentException("BOOM!"))
       *     effect.interceptDefect[IllegalArgumentException]
       *   }
@@ -136,7 +136,7 @@ trait ZAssertions {
 
     /** Asserts that `ZIO[R, E, Any]` should fail with provided exception `E` and message `message`.
       * {{{
-      *   test("effect should fail with message") {
+      *   testZ("effect should fail with message") {
       *     val effect = ZIO.fail(new IllegalArgumentException("BOOM!"))
       *     interceptFailureMessage[IllegalArgumentException]("BOOM!")(effect)
       *   }
