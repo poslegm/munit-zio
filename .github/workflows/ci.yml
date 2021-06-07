@@ -1,0 +1,34 @@
+name: CI
+on:
+    push:
+        branches:
+            - master
+        tags:
+            - "*"
+    pull_request:
+
+jobs:
+    test:
+        strategy:
+            fail-fast: false
+            matrix:
+                java: [adopt@1.8, adopt@1.11]
+                os: [ubuntu-latest]
+        runs-on: ${{ matrix.os }}
+        steps:
+            - uses: actions/checkout@v2
+            - uses: olafurpg/setup-scala@v11
+              with:
+                  java-version: ${{ matrix.java }}
+            - run: TEST="2.12" sbt ci-test
+              shell: bash
+            - run: TEST="2.13" sbt ci-test
+              shell: bash
+            - run: TEST="3" sbt ci-test
+              shell: bash
+    formatting:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: olafurpg/setup-scala@v11
+            - run: sbt fmtCheck
