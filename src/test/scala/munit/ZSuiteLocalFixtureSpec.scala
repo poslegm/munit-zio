@@ -1,9 +1,8 @@
 package munit
 
 import zio.*
-import zio.console.*
 
-class ZSuiteLocalFixtureSpec extends ZSuite:
+class ZSuiteLocalFixtureSpec extends ZSuite {
   var state   = 0
   val fixture = ZSuiteLocalFixture(
     "sample",
@@ -21,3 +20,4 @@ class ZSuiteLocalFixtureSpec extends ZSuite:
 
   override def afterAll(): Unit =
     assertEquals(state, 2)
+}

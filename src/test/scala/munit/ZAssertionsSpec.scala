@@ -1,10 +1,8 @@
 package munit
 
 import zio.*
-import zio.duration.*
-import zio.clock.Clock
 
-class ZAssertionsSpec extends ZSuite:
+class ZAssertionsSpec extends ZSuite {
 
   testZ("assertZ works (successful assertion)") {
     val zio = ZIO.succeed(true)
@@ -63,11 +61,11 @@ class ZAssertionsSpec extends ZSuite:
 
   testZ("interceptDefect works (failed assertion: different exception)".fail) {
     val zio = ZIO.die(new Exception("BOOM!"))
-    zio.interceptFailure[IllegalArgumentException]
+    zio.interceptDefect[IllegalArgumentException]
   }
 
   testZ("interceptFailure works (failed assertion: effect does not fail)".fail) {
-    val zio = ZIO.succeed(42)
+    val zio = ZIO(42)
     zio.interceptFailure[IllegalArgumentException]
   }
 
@@ -97,6 +95,7 @@ class ZAssertionsSpec extends ZSuite:
   }
 
   testZ("interceptFailureMessage works (failed assertion: ZIO does not fail)".fail) {
-    val zio = ZIO.succeed(42)
+    val zio = ZIO(42)
     zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
+}

@@ -3,7 +3,7 @@ package munit
 import zio.*
 import zio.console.*
 
-class ZTestLocalFixturesSpec extends ZSuite:
+class ZTestLocalFixturesSpec extends ZSuite {
   val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired ${options.name}")) {
     str =>
       putStrLn(s"cleanup [$str]").provideLayer(Console.live)
@@ -24,7 +24,8 @@ class ZTestLocalFixturesSpec extends ZSuite:
   }
 
   FunFixture.map2(rawZIOFunFixture, ZManagedFunFixture).test("compose ZIO FunFixtures") {
-    (str1, str2) =>
+    case (str1, str2) =>
       assertNoDiff(str1, "acquired compose ZIO FunFixtures")
       assertNoDiff(str2, "acquired compose ZIO FunFixtures with ZManaged")
   }
+}

@@ -2,14 +2,12 @@ package munit
 
 import zio.*
 
-import java.util.concurrent.ExecutionException
-
 abstract class ZSuite
     extends FunSuite
     with ZAssertions
     with ZFixtures
     with ZFixtureSyntax
-    with ZRuntime:
+    with ZRuntime {
 
   /** Runs test returning `ZIO[Any, E, Any]`
     *
@@ -30,10 +28,10 @@ abstract class ZSuite
     * @param body
     *   test body
     */
-  def testZ[E](name: String)(body: IO[E, Any])(using Location): Unit =
+  def testZ[E](name: String)(body: IO[E, Any])(implicit loc: Location): Unit =
     testZ(TestOptions(name))(body)
 
-  def testZ[E](options: TestOptions)(body: IO[E, Any])(using Location): Unit =
+  def testZ[E](options: TestOptions)(body: IO[E, Any])(implicit loc: Location): Unit =
     test(options)(unsafeRunToFuture(body))
 
   override def munitValueTransforms: List[ValueTransform] =
@@ -46,5 +44,6 @@ abstract class ZSuite
   private val munitZIOTransform: ValueTransform =
     new ValueTransform(
       "ZIO",
-      { case z: ZIO[?, ?, ?] => throw WrongTestMethodError() }
+      { case _: ZIO[?, ?, ?] => throw new WrongTestMethodError() }
     )
+}

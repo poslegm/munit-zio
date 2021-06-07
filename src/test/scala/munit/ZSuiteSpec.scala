@@ -2,17 +2,18 @@ package munit
 
 import zio._
 
-class ZSuiteSpec extends ZSuite:
+class ZSuiteSpec extends ZSuite {
   testZ("ZIO success on standart test") {
-    for
+    for {
       x   <- ZIO(41)
       res <- ZIO(x + 1)
-    yield assertEquals(res, 42)
+    } yield assertEquals(res, 42)
   }
 
   testZ("ZIO fail on standart test".fail) {
-    for
+    for {
       x   <- ZIO(41)
       res <- ZIO(x + 1)
-    yield assertEquals(res, 43)
+    } yield assertEquals(res, 43)
   }
+}

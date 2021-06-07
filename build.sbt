@@ -16,7 +16,7 @@ inThisBuild(
   )
 )
 
-val scala212 = "2.12.4"
+val scala212 = "2.12.14"
 val scala213 = "2.13.6"
 val scala3   = "3.0.0"
 
@@ -46,7 +46,9 @@ lazy val root = project
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, _)) =>
+        case Some((2, 12)) =>
+          Seq("-Xsource:3")
+        case Some((2, 13)) =>
           Seq(
             "-Xsource:3",
             "-Wdead-code",
@@ -54,7 +56,7 @@ lazy val root = project
             "-Wunused",
             "-Ywarn-value-discard"
           )
-        case _            => Seq("-explain", "-indent", "-new-syntax")
+        case _             => Seq("-explain", "-source:3.0-migration")
       }
     },
     crossScalaVersions := Seq(scala3, scala212, scala213),

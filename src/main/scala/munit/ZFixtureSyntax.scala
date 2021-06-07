@@ -2,19 +2,22 @@ package munit
 
 import zio.{RIO, ULayer, IO}
 
-trait ZFixtureSyntax:
+trait ZFixtureSyntax {
   self: ZSuite =>
 
-  extension [T](fixture: FunFixture[T])
-    def testZ[E](name: String)(body: T => IO[E, Any])(using Location): Unit =
+  implicit class FixtureSyntax[T](private val fixture: FunFixture[T]) {
+    def testZ[E](name: String)(body: T => IO[E, Any])(implicit loc: Location): Unit =
       fixture.testZ(TestOptions(name))(body)
 
-    def testZ[E](options: TestOptions)(body: T => IO[E, Any])(using Location): Unit =
+    def testZ[E](options: TestOptions)(body: T => IO[E, Any])(implicit loc: Location): Unit =
       fixture.test(options)(arg => unsafeRunToFuture(body(arg)))
+  }
 
-  extension [R](fixture: FunFixture[ULayer[R]])
-    def testZ(name: String)(body: RIO[R, Any])(using Location): Unit =
-      fixture.testZ(TestOptions(name))(body)
+  implicit class LayerFixtureSyntax[R](private val fixture: FunFixture[ULayer[R]]) {
+    def testZLayered(name: String)(body: RIO[R, Any])(implicit loc: Location): Unit =
+      fixture.testZLayered(TestOptions(name))(body)
 
-    def testZ(options: TestOptions)(body: RIO[R, Any])(using Location): Unit =
+    def testZLayered(options: TestOptions)(body: RIO[R, Any])(implicit loc: Location): Unit =
       fixture.testZ(options)(layer => body.provideLayer(layer))
+  }
+}

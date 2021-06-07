@@ -2,7 +2,7 @@ package munit
 
 import zio.{IO, Managed, UIO, Exit, ZIO}
 
-trait ZFixtures:
+trait ZFixtures {
   self: ZSuite =>
 
   /** Test-local fixture.
@@ -29,22 +29,22 @@ trait ZFixtures:
     * }
     * }}}
     */
-  object ZTestLocalFixture:
+  object ZTestLocalFixture {
     def apply[E, A](setup: TestOptions => IO[E, A])(teardown: A => IO[E, Unit]): FunFixture[A] =
       FunFixture.async(
         options => unsafeRunToFuture(setup(options)),
         t => unsafeRunToFuture(teardown(t))
       )
 
-    def apply[E, A](create: TestOptions => Managed[E, A]): FunFixture[A] =
+    def apply[E, A](create: TestOptions => Managed[E, A]): FunFixture[A] = {
       var release: Exit[Any, Any] => UIO[Any] = null
       FunFixture.async(
         setup = { options =>
-          val effect = for
+          val effect = for {
             res      <- create(options).reserve
             _        <- ZIO.effectTotal { release = res.release }
             resource <- res.acquire
-          yield resource
+          } yield resource
           unsafeRunToFuture(effect)
         },
         teardown = { resource =>
@@ -52,6 +52,8 @@ trait ZFixtures:
           unsafeRunToFuture(effect)
         }
       )
+    }
+  }
 
   /** Suite local fixture from ZManaged.
     *
@@ -70,27 +72,34 @@ trait ZFixtures:
     * }
     * }}}
     */
-  object ZSuiteLocalFixture:
+  object ZSuiteLocalFixture {
     final class FixtureNotInstantiatedException(name: String)
         extends Exception(
           s"The fixture `$name` was not instantiated. Override `munitFixtures` and include a reference to this fixture."
         )
-    private case class Resource[T](content: T, acquire: Exit[Any, Any] => UIO[Any])
+    private case class Resource[T](content: T, release: Exit[Any, Any] => UIO[Any])
 
-    def apply[E, A](name: String, managed: Managed[E, A]): Fixture[A] =
+    def apply[E, A](name: String, managed: Managed[E, A]): Fixture[A] = {
       var resource: Resource[A] = null
       new Fixture[A](name) {
         def apply(): A =
-          if resource == null then throw FixtureNotInstantiatedException(name) else resource.content
+          if (resource == null) throw new FixtureNotInstantiatedException(name)
+          else resource.content
 
-        override def beforeAll(): Unit =
-          val effect = for
+        override def beforeAll(): Unit = {
+          val effect = for {
             res     <- managed.reserve
             content <- res.acquire
             _       <- ZIO.effectTotal { resource = Resource(content, res.release) }
-          yield ()
+          } yield ()
           runtime.unsafeRun(effect)
+        }
 
-        override def afterAll(): Unit =
-          runtime.unsafeRun(resource.acquire(Exit.succeed(resource.content)))
+        override def afterAll(): Unit = {
+          runtime.unsafeRun(resource.release(Exit.succeed(resource.content)))
+          ()
+        }
       }
+    }
+  }
+}
