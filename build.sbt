@@ -36,7 +36,6 @@ lazy val root = project
   .in(file("."))
   .settings(
     name := "munit-zio",
-    version := "0.1.0",
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
     scalaVersion := scala3,
     scalacOptions := Seq(
