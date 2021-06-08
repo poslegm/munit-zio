@@ -5,7 +5,31 @@ Integration library between [MUnit](https://scalameta.org/munit) and
 
 ## Usage
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.poslegm/munit-zio_3/badge.svg?kill_cache=1)](https://search.maven.org/artifact/com.github.poslegm/munit-zio_3/)
+
 Library published for Scala 3, 2.13, 2.12.
+
+### sbt
+
+```scala
+libraryDependencies += "org.scalameta" %% "munit" % munitVersion % Test
+libraryDependencies += "com.github.poslegm" %% "munit-zio" % munitZIOVersion % Test
+```
+
+If you are using a version of sbt lower than 1.5.0, you will also need to add:
+```scala
+testFrameworks += new TestFramework("munit.Framework")
+```
+
+Run tests:
+
+```
+$ sbt
+> test
+> testOnly com.MySuite
+```
+
+Full MUnit documentation available [here](https://scalameta.org/munit/docs/getting-started.html).
 
 <!-- TOC depthFrom:2 depthTo:3 -->
 
@@ -13,7 +37,7 @@ Library published for Scala 3, 2.13, 2.12.
 - [Assertions](#assertions)
   - [assertZ](#assertz)
   - [assertNoDiffZ](#assertnodiffz)
-  - [assertEqualsZ / assertNotEqualsZ](#assertequalsz-assertnotequalsz)
+  - [assertEqualsZ (assertNotEqualsZ)](#assertequalsz-assertnotequalsz)
 - [Failure checking](#failure-checking)
   - [interceptFailure](#interceptfailure)
   - [interceptFailureMessage](#interceptfailuremessage)
@@ -74,7 +98,7 @@ testZ("strings are the same") {
 }
 ``` 
 
-#### assertEqualsZ / assertNotEqualsZ
+#### assertEqualsZ (assertNotEqualsZ)
 
 Asserts that `ZIO[R, E, A]` returns the same result as expected
  
