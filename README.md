@@ -132,7 +132,7 @@ message `message`.
 ```scala
 testZ("effect should fail with message") {
   val effect = ZIO.fail(new IllegalArgumentException("BOOM!"))
-  interceptFailureMessage[IllegalArgumentException]("BOOM!")(effect)
+  effect.interceptFailureMessage[IllegalArgumentException]("BOOM!")
 }
 ```
  
