@@ -63,7 +63,7 @@ import zio.*
 
 class SimpleZIOSpec extends ZSuite:
   testZ("1 + 1 = 2") {
-    val effect = for
+    for
       a <- ZIO(1)
       b <- ZIO(1)
     yield assert(a + b, 2)
