@@ -66,7 +66,7 @@ class SimpleZIOSpec extends ZSuite:
     for
       a <- ZIO(1)
       b <- ZIO(1)
-    yield assert(a + b, 2)
+    yield assertEquals(a + b, 2)
   }
 ```
 
