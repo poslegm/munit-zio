@@ -3,9 +3,9 @@ import Dependencies._
 inThisBuild(
   List(
     organization := "com.github.poslegm",
-    homepage := Some(url("https://github.com/poslegm/munit-zio/")),
-    licenses := List("MIT" -> url("http://opensource.org/licenses/MIT")),
-    developers := List(
+    homepage     := Some(url("https://github.com/poslegm/munit-zio/")),
+    licenses     := List("MIT" -> url("http://opensource.org/licenses/MIT")),
+    developers   := List(
       Developer(
         "poslegm",
         "Mikhail Chugunkov",
@@ -35,10 +35,10 @@ commands += Command.command("ci-test") { s =>
 lazy val root = project
   .in(file("."))
   .settings(
-    name := "munit-zio",
+    name                                 := "munit-zio",
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
-    scalaVersion := scala3,
-    scalacOptions := Seq(
+    scalaVersion                         := scala3,
+    scalacOptions                        := Seq(
       "-Xfatal-warnings",
       "-deprecation",
       "-unchecked"
@@ -58,8 +58,8 @@ lazy val root = project
         case _             => Seq("-explain", "-source:3.0-migration")
       }
     },
-    crossScalaVersions := Seq(scala3, scala212, scala213),
-    libraryDependencies := Seq(munit, zio),
+    crossScalaVersions                   := Seq(scala3, scala212, scala213),
+    libraryDependencies                  := Seq(munit, zio),
     testFrameworks += new TestFramework("munit.Framework")
   )
 
