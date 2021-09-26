@@ -34,7 +34,7 @@ abstract class ZSuite
   def testZ[E](options: TestOptions)(body: IO[E, Any])(implicit loc: Location): Unit =
     test(options)(unsafeRunToFuture(body))
 
-  override def munitValueTransforms: List[ValueTransform] =
+  override def munitValueTransforms: List[ValueTransform]                            =
     super.munitValueTransforms ::: List(munitZIOTransform)
 
   class WrongTestMethodError

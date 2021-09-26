@@ -3,8 +3,8 @@ package munit
 import zio.*
 
 class ZSuiteLocalFixtureSpec extends ZSuite {
-  var state   = 0
-  val fixture = ZSuiteLocalFixture(
+  var state                  = 0
+  val fixture                = ZSuiteLocalFixture(
     "sample",
     ZManaged.make(ZIO.effectTotal { state += 1; state })(_ => ZIO.effectTotal { state += 1 })
   )

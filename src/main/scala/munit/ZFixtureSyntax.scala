@@ -5,7 +5,7 @@ import zio.{RIO, ULayer, IO}
 trait ZFixtureSyntax {
   self: ZSuite =>
 
-  implicit class FixtureSyntax[T](private val fixture: FunFixture[T]) {
+  implicit class FixtureSyntax[T](private val fixture: FunFixture[T])              {
     def testZ[E](name: String)(body: T => IO[E, Any])(implicit loc: Location): Unit =
       fixture.testZ(TestOptions(name))(body)
 

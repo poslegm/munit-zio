@@ -82,7 +82,7 @@ trait ZFixtures {
     def apply[E, A](name: String, managed: Managed[E, A]): Fixture[A] = {
       var resource: Resource[A] = null
       new Fixture[A](name) {
-        def apply(): A =
+        def apply(): A                 =
           if (resource == null) throw new FixtureNotInstantiatedException(name)
           else resource.content
 
@@ -95,7 +95,7 @@ trait ZFixtures {
           runtime.unsafeRun(effect)
         }
 
-        override def afterAll(): Unit = {
+        override def afterAll(): Unit  = {
           runtime.unsafeRun(resource.release(Exit.succeed(resource.content)))
           ()
         }
