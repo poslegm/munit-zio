@@ -42,7 +42,7 @@ trait ZFixtures {
         setup = { options =>
           val effect = for {
             res      <- create(options).reserve
-            _        <- ZIO.effectTotal { release = res.release }
+            _        <- ZIO.succeed { release = res.release }
             resource <- res.acquire
           } yield resource
           unsafeRunToFuture(effect)
@@ -90,7 +90,7 @@ trait ZFixtures {
           val effect = for {
             res     <- managed.reserve
             content <- res.acquire
-            _       <- ZIO.effectTotal { resource = Resource(content, res.release) }
+            _       <- ZIO.succeed { resource = Resource(content, res.release) }
           } yield ()
           runtime.unsafeRun(effect)
         }

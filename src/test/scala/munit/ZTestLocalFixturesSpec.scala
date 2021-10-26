@@ -1,17 +1,16 @@
 package munit
 
 import zio.*
-import zio.console.*
 
 class ZTestLocalFixturesSpec extends ZSuite {
   val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired ${options.name}")) {
     str =>
-      putStrLn(s"cleanup [$str]").provideLayer(Console.live)
+      Console.printLine(s"cleanup [$str]").provideLayer(Console.live)
   }
 
   val ZManagedFunFixture = ZTestLocalFixture { options =>
-    ZManaged.make(ZIO.succeed(s"acquired ${options.name} with ZManaged")) { str =>
-      putStrLn(s"cleanup [$str] with ZManaged").provideLayer(Console.live).orDie
+    ZManaged.acquireReleaseWith(ZIO.succeed(s"acquired ${options.name} with ZManaged")) { str =>
+      Console.printLine(s"cleanup [$str] with ZManaged").provideLayer(Console.live).orDie
     }
   }
 
