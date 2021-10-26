@@ -5,13 +5,14 @@ import zio.{Runtime, IO, Exit}
 import scala.concurrent.{Promise, Future}
 
 trait ZRuntime {
-  protected val runtime: Runtime[Any] = Runtime.global.withReportFailure { cause =>
-    cause.dieOption.foreach {
-      // suppress munit reports duplication
-      case _: FailExceptionLike[?] =>
-      case _                       => System.err.println(cause.prettyPrint)
-    }
-  }
+  protected val runtime: Runtime[Any] =
+    // suppress munit reports duplication
+    Runtime.global.mapRuntimeConfig(_.copy(reportFatal = {
+      case cause: FailExceptionLike[?] => throw cause
+      case cause                       =>
+        cause.printStackTrace
+        throw cause
+    }))
 
   /** Because original unsafeRunToFuture adds useless causes to `FailExceptionLike` and duplicates
     * errors on every test failure. See `cause.squashTraceWith(identity)`
@@ -24,7 +25,7 @@ trait ZRuntime {
         case t: Throwable => t
         case other        => new ZIOError(other)
       }
-    runtime.unsafeRunAsync(task) {
+    runtime.unsafeRunAsyncWith(task) {
       case Exit.Success(res)   => promise.success(res)
       case Exit.Failure(cause) => promise.failure(cause.squash)
     }

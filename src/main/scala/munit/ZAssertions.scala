@@ -113,7 +113,7 @@ trait ZAssertions {
         loc: Location,
         ct: ClassTag[E1]
     ): ZIO[R, FailExceptionLike[?], E1] =
-      body.run.flatMap(runIntercept(None, _, false))
+      body.exit.flatMap(runIntercept(None, _, false))
 
     /** Asserts that `ZIO[R, E, Any]` should die with provided exception `E`.
       * {{{
@@ -132,7 +132,7 @@ trait ZAssertions {
         loc: Location,
         ct: ClassTag[E1]
     ): ZIO[R, FailExceptionLike[?], E1] =
-      body.run.flatMap(runIntercept(None, _, true))
+      body.exit.flatMap(runIntercept(None, _, true))
 
     /** Asserts that `ZIO[R, E, Any]` should fail with provided exception `E` and message `message`.
       * {{{
@@ -148,7 +148,7 @@ trait ZAssertions {
     def interceptFailureMessage[E1 <: E](
         message: String
     )(implicit loc: Location, ct: ClassTag[E1]): ZIO[R, FailExceptionLike[?], E1] =
-      body.run.flatMap(runIntercept(Some(message), _, false))
+      body.exit.flatMap(runIntercept(Some(message), _, false))
   }
 
   private def runIntercept[E <: Throwable](
