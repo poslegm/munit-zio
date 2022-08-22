@@ -91,6 +91,7 @@ trait ZFixtures {
               managed.map { r => resource = Some(r) }.provideLayer(ZLayer.succeed(scope))
             )
           }
+          ()
         }
 
         override def afterAll(): Unit = {
