@@ -64,8 +64,8 @@ import zio.*
 class SimpleZIOSpec extends ZSuite:
   testZ("1 + 1 = 2") {
     for
-      a <- ZIO(1)
-      b <- ZIO(1)
+      a <- ZIO.attempt(1)
+      b <- ZIO.attempt(1)
     yield assertEquals(a + b, 2)
   }
 ```
@@ -149,7 +149,7 @@ testZ("effect should die") {
 
 ### Resource management
 
-Resource management in ZSuite based on `ZManaged` and MUnit fixtures.
+Resource management in ZSuite based on `Scoped` and MUnit fixtures.
 "Test-local" means that resource will be acquired and released on __every__
 `testZ` execution.  "Suite-local" means that resource will be acquired __before
 all__ `testZ` executions and released __after all__ `testZ` executions.
@@ -158,7 +158,7 @@ Resources from test- and suite-local fixtures can be accessed directly from
 
 #### Test-local fixture
 
-You can create test-local fixture from `ZManaged` or raw acquire/release effects.
+You can create test-local fixture from `Scoped` or raw acquire/release effects.
 
 ```scala
 // define fixture with raw acquire/release effects
@@ -169,26 +169,26 @@ val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired ${opt
 
 // use it with `testZ` extension method with resource access
 rawZIOFunFixture.testZ("allocate resource with ZIO FunFixture") { str => // <- resource
-  val effect = ZIO(str.trim)
+  val effect = ZIO.attempt(str.trim)
   assertNoDiffZ(effect, "acquired allocate resource with ZIO FunFixture")
 }
 
-// similarly for `ZManaged`
-val ZManagedFunFixture = ZTestLocalFixture { options =>
-  ZManaged.make(ZIO.succeed(s"acquired ${options.name} with ZManaged")) { str =>
-    putStrLn(s"cleanup [$str] with ZManaged").provideLayer(Console.live).orDie
+// similarly for `Scoped`
+val ScopedFunFixture = ZTestLocalFixture { options =>
+  ZIO.acquireRelease(ZIO.succeed(s"acquired ${options.name} with Scoped")) { str =>
+    printLine(s"cleanup [$str] with Scoped").orDie
   }
 }
 
-ZManagedFunFixture.testZ("allocate resource with ZManaged FunFixture") { str =>
-  val effect = ZIO(str.trim)
-  assertNoDiffZ(effect, "acquired allocate resource with ZManaged FunFixture with ZManaged")
+ScopedFunFixture.testZ("allocate resource with Scoped FunFixture") { str =>
+  val effect = ZIO.attempt(str.trim)
+  assertNoDiffZ(effect, "acquired allocate resource with Scoped FunFixture with Scoped")
 }
 ```
 
 #### Suite-local fixture
 
-Suite-local fixture can be created from `ZManaged` and provides synchronous
+Suite-local fixture can be created from `Scoped` and provides synchronous
 access to its resource.
 
 ```scala
@@ -196,7 +196,7 @@ access to its resource.
 var state   = 0
 val fixture = ZSuiteLocalFixture(
   "sample",
-  ZManaged.make(ZIO.effectTotal { state += 1; state })(_ => ZIO.effectTotal { state += 1 })
+  ZIO.acquireRelease(ZIO.attempt { state += 1; state })(_ => ZIO.attempt { state += 1 }.orDie)
 )
 
 // suite-local fixture should be necessarily initialized
@@ -225,8 +225,8 @@ def write: RIO[Has[Service], Unit] = ZIO.service[Service].flatMap(_.write)
 // ===========
 
 val layersFixture = ZTestLocalFixture { _ =>
-  // wire layers in `ZManaged`'s acquire
-  ZManaged.make(ZIO.succeed(StatefulRepository.test >+> Service.test))(layers =>
+  // wire layers in `Scoped`'s acquire
+  ZIO.acquireRelease(ZIO.succeed(StatefulRepository.test >+> Service.test))(layers =>
     // graceful release resources after test execution
     clean.provideLayer(layers)
   )

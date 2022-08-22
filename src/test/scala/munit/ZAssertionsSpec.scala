@@ -15,22 +15,22 @@ class ZAssertionsSpec extends ZSuite {
   }
 
   testZ("assertEqualsZ works (successful assertion)") {
-    val zio = ZIO(41).map(_ + 1)
+    val zio = ZIO.attempt(41).map(_ + 1)
     assertEqualsZ(zio, 42)
   }
 
   testZ("assertEqualsZ works (failed assertion)".fail) {
-    val zio = ZIO(41).map(_ + 2)
+    val zio = ZIO.attempt(41).map(_ + 2)
     assertEqualsZ(zio, 42)
   }
 
   testZ("assertNotEqualsZ works (successful assertion)") {
-    val zio = ZIO(41).map(_ + 2)
+    val zio = ZIO.attempt(41).map(_ + 2)
     assertNotEqualsZ(zio, 42)
   }
 
   testZ("assertNotEqualsZ works (failed assertion)".fail) {
-    val zio = ZIO(41).map(_ + 1)
+    val zio = ZIO.attempt(41).map(_ + 1)
     assertNotEqualsZ(zio, 42)
   }
 
@@ -65,7 +65,7 @@ class ZAssertionsSpec extends ZSuite {
   }
 
   testZ("interceptFailure works (failed assertion: effect does not fail)".fail) {
-    val zio = ZIO(42)
+    val zio = ZIO.attempt(42)
     zio.interceptFailure[IllegalArgumentException]
   }
 
@@ -95,7 +95,7 @@ class ZAssertionsSpec extends ZSuite {
   }
 
   testZ("interceptFailureMessage works (failed assertion: ZIO does not fail)".fail) {
-    val zio = ZIO(42)
+    val zio = ZIO.attempt(42)
     zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
 }

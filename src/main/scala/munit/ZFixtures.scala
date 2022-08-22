@@ -1,22 +1,22 @@
 package munit
 
-import zio.{IO, Managed, UIO, Exit, ZIO}
+import zio.*
 
 trait ZFixtures {
   self: ZSuite =>
 
   /** Test-local fixture.
     *
-    * Can be created from raw setup/teardown effects or from ZManaged.
+    * Can be created from raw setup/teardown effects or from Scoped effect.
     *
     * {{{
     * val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired \${options.name}")) { str =>
     *   putStrLn(s"cleanup [\$str]").provideLayer(Console.live)
     * }
     *
-    * val ZManagedFunFixture = ZTestLocalFixture { options =>
-    *   ZManaged.make(ZIO.succeed(s"acquired \${options.name} with ZManaged")) { str =>
-    *     putStrLn(s"cleanup [\$str] with ZManaged").provideLayer(Console.live).orDie
+    * val scopedFunFixture = ZTestLocalFixture { options =>
+    *   ZIO.acquireRelease(ZIO.succeed(s"acquired \${options.name} with Scoped")) { str =>
+    *     printLine(s"cleanup [\$str] with Scoped").orDie
     *   }
     * }
     *
@@ -24,8 +24,8 @@ trait ZFixtures {
     *   assertNoDiff(str, "acquired allocate resource with ZIO FunFixture")
     * }
     *
-    * ZManagedFunFixture.test("allocate resource with ZManaged FunFixture") { str =>
-    *   assertNoDiff(str, "acquired allocate resource with ZManaged FunFixture with ZManaged")
+    * scopedFunFixture.test("allocate resource with Scoped FunFixture") { str =>
+    *   assertNoDiff(str, "acquired allocate resource with Scoped FunFixture with Scoped")
     * }
     * }}}
     */
@@ -36,33 +36,30 @@ trait ZFixtures {
         t => unsafeRunToFuture(teardown(t))
       )
 
-    def apply[E, A](create: TestOptions => Managed[E, A]): FunFixture[A] = {
-      var release: Exit[Any, Any] => UIO[Any] = null
+    def apply[E, A](create: TestOptions => ZIO[Scope, E, A]): FunFixture[A] = {
+      val scope = Unsafe.unsafe { implicit unsafe =>
+        runtime.unsafe.run(Scope.make).getOrThrow()
+      }
       FunFixture.async(
         setup = { options =>
-          val effect = for {
-            res      <- create(options).reserve
-            _        <- ZIO.effectTotal { release = res.release }
-            resource <- res.acquire
-          } yield resource
-          unsafeRunToFuture(effect)
+          unsafeRunToFuture(create(options).provideLayer(ZLayer.succeed(scope)))
         },
         teardown = { resource =>
-          val effect = release(Exit.succeed(resource)).unit
+          val effect = scope.close(Exit.succeed(resource)).unit
           unsafeRunToFuture(effect)
         }
       )
     }
   }
 
-  /** Suite local fixture from ZManaged.
+  /** Suite local fixture from Scoped effect.
     *
     * {{{
     *
     * var state   = 0
     * val fixture = ZSuiteLocalFixture(
     *   "sample",
-    *   ZManaged.make(ZIO.effectTotal { state += 1; state })(_ => ZIO.effectTotal { state -= 1 })
+    *   ZIO.acquireRelease(ZIO.attempt { state += 1; state })(_ => ZIO.attempt { state -= 1 }.orDie)
     * )
     *
     * override val munitFixtures = Seq(fixture)
@@ -77,26 +74,30 @@ trait ZFixtures {
         extends Exception(
           s"The fixture `$name` was not instantiated. Override `munitFixtures` and include a reference to this fixture."
         )
-    private case class Resource[T](content: T, release: Exit[Any, Any] => UIO[Any])
 
-    def apply[E, A](name: String, managed: Managed[E, A]): Fixture[A] = {
-      var resource: Resource[A] = null
+    def apply[E, A](name: String, managed: ZIO[Scope, E, A]): Fixture[A] = {
+      var resource: Option[A] = None
+
+      val scope = Unsafe.unsafe { implicit unsafe =>
+        runtime.unsafe.run(Scope.make).getOrThrow()
+      }
       new Fixture[A](name) {
         def apply(): A =
-          if (resource == null) throw new FixtureNotInstantiatedException(name)
-          else resource.content
+          resource.getOrElse(throw new FixtureNotInstantiatedException(name))
 
         override def beforeAll(): Unit = {
-          val effect = for {
-            res     <- managed.reserve
-            content <- res.acquire
-            _       <- ZIO.effectTotal { resource = Resource(content, res.release) }
-          } yield ()
-          runtime.unsafeRun(effect)
+          Unsafe.unsafe { implicit unsafe =>
+            runtime.unsafe.run(
+              managed.map { r => resource = Some(r) }.provideLayer(ZLayer.succeed(scope))
+            )
+          }
+          ()
         }
 
         override def afterAll(): Unit = {
-          runtime.unsafeRun(resource.release(Exit.succeed(resource.content)))
+          Unsafe.unsafe { implicit unsafe =>
+            runtime.unsafe.run(scope.close(Exit.succeed(resource)))
+          }
           ()
         }
       }
