@@ -1,17 +1,17 @@
 package munit
 
 import zio.*
-import zio.console.*
+import zio.Console.*
 
 class ZTestLocalFixturesSpec extends ZSuite {
   val rawZIOFunFixture = ZTestLocalFixture(options => ZIO.succeed(s"acquired ${options.name}")) {
     str =>
-      putStrLn(s"cleanup [$str]").provideLayer(Console.live)
+      printLine(s"cleanup [$str]")
   }
 
-  val ZManagedFunFixture = ZTestLocalFixture { options =>
-    ZManaged.make(ZIO.succeed(s"acquired ${options.name} with ZManaged")) { str =>
-      putStrLn(s"cleanup [$str] with ZManaged").provideLayer(Console.live).orDie
+  val ScopedFunFixture = ZTestLocalFixture { options =>
+    ZIO.acquireRelease(ZIO.succeed(s"acquired ${options.name} with Scoped")) { str =>
+      printLine(s"cleanup [$str] with Scoped").orDie
     }
   }
 
@@ -19,13 +19,13 @@ class ZTestLocalFixturesSpec extends ZSuite {
     assertNoDiff(str, "acquired allocate resource with ZIO FunFixture")
   }
 
-  ZManagedFunFixture.test("allocate resource with ZManaged FunFixture") { str =>
-    assertNoDiff(str, "acquired allocate resource with ZManaged FunFixture with ZManaged")
+  ScopedFunFixture.test("allocate resource with Scoped FunFixture") { str =>
+    assertNoDiff(str, "acquired allocate resource with Scoped FunFixture with Scoped")
   }
 
-  FunFixture.map2(rawZIOFunFixture, ZManagedFunFixture).test("compose ZIO FunFixtures") {
+  FunFixture.map2(rawZIOFunFixture, ScopedFunFixture).test("compose ZIO FunFixtures") {
     case (str1, str2) =>
       assertNoDiff(str1, "acquired compose ZIO FunFixtures")
-      assertNoDiff(str2, "acquired compose ZIO FunFixtures with ZManaged")
+      assertNoDiff(str2, "acquired compose ZIO FunFixtures with Scoped")
   }
 }

@@ -6,7 +6,7 @@ class ZSuiteLocalFixtureSpec extends ZSuite {
   var state   = 0
   val fixture = ZSuiteLocalFixture(
     "sample",
-    ZManaged.make(ZIO.effectTotal { state += 1; state })(_ => ZIO.effectTotal { state += 1 })
+    ZIO.acquireRelease(ZIO.attempt { state += 1; state })(_ => ZIO.attempt { state += 1 }.orDie)
   )
 
   override val munitFixtures = Seq(fixture)

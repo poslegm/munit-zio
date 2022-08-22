@@ -6,14 +6,14 @@ import SampleDependencies.*
 
 class ZLayerSpec extends ZSuite {
   testZ("simple layers providing") {
-    val deps = ZLayer.succeed(new A()) >>> ZLayer.fromService[A, B](new B(_))
+    val deps = ZLayer.succeed(new A()) >>> ZLayer.fromFunction(new B(_))
 
     val effect = ZIO.service[B].map(_.g)
     assertZ(effect.provideLayer(deps))
   }
 
   val layersFixture = ZTestLocalFixture { _ =>
-    ZManaged.make(ZIO.succeed(StatefulRepository.test >+> Service.test))(layers =>
+    ZIO.acquireRelease(ZIO.succeed(StatefulRepository.test >+> Service.test))(layers =>
       clean.provideLayer(layers)
     )
   }
@@ -49,13 +49,13 @@ object SampleDependencies {
   class StatefulRepository {
     private var state = 0
 
-    def getState: Task[Int] = ZIO.effectTotal { state }
+    def getState: Task[Int] = ZIO.attempt { state }
 
     def inc: Task[Unit] =
-      ZIO.effectTotal { state += 1 }
+      ZIO.attempt { state += 1 }
 
     def clean: UIO[Unit] =
-      ZIO.effectTotal { state = 0 }
+      ZIO.attempt { state = 0 }.orDie
   }
 
   object StatefulRepository {
@@ -68,7 +68,7 @@ object SampleDependencies {
   }
 
   object Service {
-    val test = ZLayer.fromService[StatefulRepository, Service](new Service(_))
+    val test = ZLayer.fromFunction(new Service(_))
   }
 
   def clean = ZIO.service[StatefulRepository].flatMap(_.clean)
