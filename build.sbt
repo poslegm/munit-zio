@@ -1,5 +1,3 @@
-import Dependencies._
-
 inThisBuild(
   List(
     organization := "com.github.poslegm",
@@ -20,6 +18,12 @@ val scala212 = "2.12.16"
 val scala213 = "2.13.6"
 val scala3   = "3.1.0"
 
+lazy val Version = new {
+  val munit         = "0.7.29"
+  val zio           = "2.0.1"
+  val scalaJavaTime = "2.3.0"
+}
+
 commands += Command.command("ci-test") { s =>
   val scalaVersion = sys.env.get("TEST") match {
     case Some("2.12") => scala212
@@ -32,13 +36,15 @@ commands += Command.command("ci-test") { s =>
     s
 }
 
-lazy val root = project
-  .in(file("."))
+lazy val core = crossProject(JVMPlatform, JSPlatform)
+  .withoutSuffixFor(JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("core"))
   .settings(
     name                                 := "munit-zio",
     libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
     scalaVersion                         := scala3,
-    scalacOptions                        := Seq(
+    scalacOptions ++= Seq(
       "-Xfatal-warnings",
       "-deprecation",
       "-unchecked"
@@ -59,8 +65,17 @@ lazy val root = project
       }
     },
     crossScalaVersions                   := Seq(scala3, scala212, scala213),
-    libraryDependencies                  := Seq(munit, zio),
+    libraryDependencies ++= Seq(
+      "org.scalameta" %%% "munit" % Version.munit,
+      "dev.zio"       %%% "zio"   % Version.zio
+    ),
     testFrameworks += new TestFramework("munit.Framework")
+  )
+  .jsSettings(
+    Test / parallelExecution := false, // NOTE: https://scalameta.org/munit/docs/tests.html#run-tests-in-parallel
+    libraryDependencies ++= Seq(
+      "io.github.cquiroz" %%% "scala-java-time" % Version.scalaJavaTime % Test // To run the tests in JSPlatform
+    )
   )
 
 addCommandAlias("fmt", """scalafmtSbt;scalafmtAll""")
