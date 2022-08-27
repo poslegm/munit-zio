@@ -16,7 +16,7 @@ inThisBuild(
   )
 )
 
-val scala212 = "2.13.8"
+val scala212 = "2.12.16"
 val scala213 = "2.13.6"
 val scala3   = "3.1.0"
 
