@@ -41,9 +41,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(
-    name                                 := "munit-zio",
-    libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
-    scalaVersion                         := scala3,
+    name                                   := "munit-zio",
+    libraryDependencies += "com.github.sbt" % "junit-interface" % "0.13.3" % "test",
+    scalaVersion                           := scala3,
     scalacOptions ++= Seq(
       "-Xfatal-warnings",
       "-deprecation",
@@ -64,7 +64,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
         case _             => Seq("-explain", "-source:3.0-migration")
       }
     },
-    crossScalaVersions                   := Seq(scala3, scala212, scala213),
+    crossScalaVersions                     := Seq(scala3, scala212, scala213),
     libraryDependencies ++= Seq(
       "org.scalameta" %%% "munit" % Version.munit,
       "dev.zio"       %%% "zio"   % Version.zio
