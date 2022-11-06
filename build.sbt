@@ -14,14 +14,14 @@ inThisBuild(
   )
 )
 
-val scala212 = "2.12.16"
-val scala213 = "2.13.6"
-val scala3   = "3.1.0"
+val scala212 = "2.12.17"
+val scala213 = "2.13.10"
+val scala3   = "3.1.3"
 
 lazy val Version = new {
   val munit         = "0.7.29"
   val zio           = "2.0.3"
-  val scalaJavaTime = "2.3.0"
+  val scalaJavaTime = "2.4.0"
 }
 
 commands += Command.command("ci-test") { s =>
@@ -41,9 +41,9 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(
-    name                                 := "munit-zio",
-    libraryDependencies += "com.novocode" % "junit-interface" % "0.11" % "test",
-    scalaVersion                         := scala3,
+    name                                   := "munit-zio",
+    libraryDependencies += "com.github.sbt" % "junit-interface" % "0.13.3" % "test",
+    scalaVersion                           := scala3,
     scalacOptions ++= Seq(
       "-Xfatal-warnings",
       "-deprecation",
@@ -64,7 +64,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
         case _             => Seq("-explain", "-source:3.0-migration")
       }
     },
-    crossScalaVersions                   := Seq(scala3, scala212, scala213),
+    crossScalaVersions                     := Seq(scala3, scala212, scala213),
     libraryDependencies ++= Seq(
       "org.scalameta" %%% "munit" % Version.munit,
       "dev.zio"       %%% "zio"   % Version.zio
