@@ -20,7 +20,7 @@ val scala3   = "3.2.1"
 
 lazy val Version = new {
   val munit         = "0.7.29"
-  val zio           = "2.0.13"
+  val zio           = "2.0.15"
   val scalaJavaTime = "2.5.0"
 }
 
