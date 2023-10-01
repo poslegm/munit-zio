@@ -15,12 +15,12 @@ inThisBuild(
 )
 
 val scala212 = "2.12.18"
-val scala213 = "2.13.10"
-val scala3   = "3.2.2"
+val scala213 = "2.13.12"
+val scala3   = "3.3.1"
 
 lazy val Version = new {
   val munit         = "0.7.29"
-  val zio           = "2.0.13"
+  val zio           = "2.0.18"
   val scalaJavaTime = "2.5.0"
 }
 

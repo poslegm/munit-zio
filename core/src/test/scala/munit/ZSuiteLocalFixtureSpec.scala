@@ -9,7 +9,7 @@ class ZSuiteLocalFixtureSpec extends ZSuite {
     ZIO.acquireRelease(ZIO.attempt { state += 1; state })(_ => ZIO.attempt { state += 1 }.orDie)
   )
 
-  override val munitFixtures = Seq(fixture)
+  override val munitFixtures: Seq[Fixture[_]] = Seq(fixture)
 
   override def beforeAll(): Unit =
     assertEquals(state, 0)
