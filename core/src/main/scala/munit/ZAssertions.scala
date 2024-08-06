@@ -69,7 +69,7 @@ trait ZAssertions {
       obtained: ZIO[R, E, A],
       expected: B,
       clue: => Any = "values are not the same"
-  )(implicit loc: Location, ev: B <:< A): ZIO[R, E, Unit] =
+  )(implicit loc: Location, ev: Compare[A, B]): ZIO[R, E, Unit] =
     obtained.map(assertEquals(_, expected, clue))
 
   /** Asserts that `ZIO[R, E, A]` returns NOT the same result as expected
@@ -91,7 +91,7 @@ trait ZAssertions {
       obtained: ZIO[R, E, A],
       expected: B,
       clue: => Any = "values are not the same"
-  )(implicit loc: Location, ev: A =:= B): ZIO[R, E, Unit] =
+  )(implicit loc: Location, ev: Compare[A, B]): ZIO[R, E, Unit] =
     obtained.map(assertNotEquals(_, expected, clue))
 
   implicit class InterceptSyntax[R, E <: Throwable](private val body: ZIO[R, E, Any]) {
