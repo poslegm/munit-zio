@@ -17,7 +17,7 @@ jobs:
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v2
-            - uses: olafurpg/setup-scala@v11
+            - uses: olafurpg/setup-scala@v14
               with:
                   java-version: ${{ matrix.java }}
             - run: TEST="2.12" sbt ci-test
