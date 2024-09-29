@@ -16,7 +16,7 @@ inThisBuild(
 
 val scala212 = "2.12.19"
 val scala213 = "2.13.14"
-val scala3   = "3.3.3"
+val scala3   = "3.3.4"
 
 lazy val Version = new {
   val munit         = "1.0.1"
