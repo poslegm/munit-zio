@@ -13,10 +13,10 @@ jobs:
             fail-fast: false
             matrix:
                 java: [adopt@1.11]
-                os: [ubuntu-latest]
+                os: [ubuntu-latest, windows-2025]
         runs-on: ${{ matrix.os }}
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
             - uses: olafurpg/setup-scala@v14
               with:
                   java-version: ${{ matrix.java }}
@@ -29,6 +29,6 @@ jobs:
     formatting:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - uses: olafurpg/setup-scala@v11
+            - uses: actions/checkout@v4
+            - uses: olafurpg/setup-scala@v14
             - run: sbt fmtCheck
