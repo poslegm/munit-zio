@@ -12,6 +12,8 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
       - uses: olafurpg/setup-scala@v14
+        with:
+            java-version: "adopt@1.11"
       - run: sbt ci-release
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
