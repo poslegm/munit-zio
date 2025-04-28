@@ -15,12 +15,12 @@ inThisBuild(
 )
 
 val scala212 = "2.12.20"
-val scala213 = "2.13.14"
-val scala3   = "3.3.3"
+val scala213 = "2.13.16"
+val scala3   = "3.3.5"
 
 lazy val Version = new {
-  val munit         = "1.0.2"
-  val zio           = "2.1.7"
+  val munit         = "1.1.0"
+  val zio           = "2.1.17"
   val scalaJavaTime = "2.6.0"
 }
 
@@ -36,7 +36,7 @@ commands += Command.command("ci-test") { s =>
     s
 }
 
-lazy val core = crossProject(JVMPlatform, JSPlatform)
+lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .withoutSuffixFor(JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
@@ -71,12 +71,14 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
     ),
     testFrameworks += new TestFramework("munit.Framework")
   )
-  .jsSettings(
-    Test / parallelExecution := false, // NOTE: https://scalameta.org/munit/docs/tests.html#run-tests-in-parallel
-    libraryDependencies ++= Seq(
-      "io.github.cquiroz" %%% "scala-java-time" % Version.scalaJavaTime % Test // To run the tests in JSPlatform
-    )
-  )
+  .jsSettings(crossSettings)
+  .nativeSettings(crossSettings)
+
+def crossSettings: List[Setting[?]] = List(
+  Test / parallelExecution := false, // NOTE: https://scalameta.org/munit/docs/tests.html#run-tests-in-parallel
+  libraryDependencies +=
+    "io.github.cquiroz"   %%% "scala-java-time" % Version.scalaJavaTime % Test // To run the tests in JSPlatform
+)
 
 addCommandAlias("fmt", """scalafmtSbt;scalafmtAll""")
 addCommandAlias("fmtCheck", """scalafmtSbtCheck;scalafmtCheckAll""")
