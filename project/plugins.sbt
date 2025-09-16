@@ -1,4 +1,4 @@
-addSbtPlugin("org.scalameta"  % "sbt-scalafmt"   % "2.5.4")
+addSbtPlugin("org.scalameta"  % "sbt-scalafmt"   % "2.5.5")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.11.2")
 
 val scalaJSVersion          = sys.env.getOrElse("SCALAJS_VERSION", "1.19.0")
