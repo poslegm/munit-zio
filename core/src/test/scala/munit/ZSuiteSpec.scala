@@ -16,4 +16,8 @@ class ZSuiteSpec extends ZSuite {
       res <- ZIO.attempt(x + 1)
     } yield assertEquals(res, 43)
   }
+
+  test("passing ZIO value to test() throws WrongTestMethodError".fail) {
+    ZIO.succeed(42)
+  }
 }

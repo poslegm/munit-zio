@@ -20,4 +20,11 @@ class ZSuiteLocalFixtureSpec extends ZSuite {
 
   override def afterAll(): Unit =
     assertEquals(state, 2)
+
+  test("FixtureNotInstantiatedException is thrown when fixture not in munitFixtures") {
+    val unregistered = ZSuiteLocalFixture("unregistered", ZIO.succeed(42))
+    intercept[ZSuiteLocalFixture.FixtureNotInstantiatedException] {
+      unregistered()
+    }
+  }
 }
