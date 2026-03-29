@@ -37,16 +37,17 @@ trait ZFixtures {
       )
 
     def apply[E, A](create: TestOptions => ZIO[Scope, E, A]): FunFixture[A] = {
-      val scope = Unsafe.unsafe { implicit unsafe =>
-        runtime.unsafe.run(Scope.make).getOrThrow()
-      }
+      var scope: Scope.Closeable = null
       FunFixture.async(
         setup = { options =>
-          unsafeRunToFuture(create(options).provideLayer(ZLayer.succeed(scope)))
+          val newScope = Unsafe.unsafe { implicit unsafe =>
+            runtime.unsafe.run(Scope.make).getOrThrow()
+          }
+          scope = newScope
+          unsafeRunToFuture(create(options).provideLayer(ZLayer.succeed(newScope)))
         },
         teardown = { resource =>
-          val effect = scope.close(Exit.succeed(resource)).unit
-          unsafeRunToFuture(effect)
+          unsafeRunToFuture(scope.close(Exit.succeed(resource)).unit)
         }
       )
     }
