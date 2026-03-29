@@ -98,4 +98,25 @@ class ZAssertionsSpec extends ZSuite {
     val zio = ZIO.attempt(42)
     zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
   }
+
+  testZ("interceptFailure returns the caught exception") {
+    val zio = ZIO.fail(new IllegalArgumentException("BOOM!"))
+    for {
+      e <- zio.interceptFailure[IllegalArgumentException]
+    } yield assertEquals(e.getMessage, "BOOM!")
+  }
+
+  testZ("interceptDefect returns the caught exception") {
+    val zio = ZIO.die(new IllegalArgumentException("BOOM!"))
+    for {
+      e <- zio.interceptDefect[IllegalArgumentException]
+    } yield assertEquals(e.getMessage, "BOOM!")
+  }
+
+  testZ("interceptFailureMessage returns the caught exception") {
+    val zio = ZIO.fail(new IllegalArgumentException("BOOM!"))
+    for {
+      e <- zio.interceptFailureMessage[IllegalArgumentException]("BOOM!")
+    } yield assertEquals(e.getMessage, "BOOM!")
+  }
 }
