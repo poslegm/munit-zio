@@ -6,3 +6,4 @@ project/metals.sbt
 .bsp/
 .metals/
 .vscode/
+.claude/
