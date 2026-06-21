@@ -21,7 +21,7 @@ val scala3   = "3.3.7"
 lazy val Version = new {
   val munit         = "1.2.4"
   val zio           = "2.1.24"
-  val scalaJavaTime = "2.6.0"
+  val scalaJavaTime = "2.7.0"
 }
 
 commands += Command.command("ci-test") { s =>
