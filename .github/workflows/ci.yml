@@ -14,17 +14,14 @@ jobs:
             matrix:
                 java: [adopt@1.11]
                 os: [ubuntu-latest, windows-2025]
+                scala: ["2.12.21", "2.13.18", "3.3.7"]
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v4
             - uses: olafurpg/setup-scala@v14
               with:
                   java-version: ${{ matrix.java }}
-            - run: TEST="2.12" sbt ci-test
-              shell: bash
-            - run: TEST="2.13" sbt ci-test
-              shell: bash
-            - run: TEST="3" sbt ci-test
+            - run: sbt "++${{ matrix.scala }}" ci-test
               shell: bash
     formatting:
         runs-on: ubuntu-latest

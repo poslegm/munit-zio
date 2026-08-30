@@ -25,13 +25,7 @@ lazy val Version = new {
 }
 
 commands += Command.command("ci-test") { s =>
-  val scalaVersion = sys.env.get("TEST") match {
-    case Some("2.12") => scala212
-    case Some("2.13") => scala213
-    case _            => scala3
-  }
-  s"++$scalaVersion" ::
-    "test" ::
+  "test" ::
     "publishLocal" ::
     s
 }
