@@ -5,7 +5,7 @@ Integration library between [MUnit](https://scalameta.org/munit) and
 
 ## Usage
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.poslegm/munit-zio_3/badge.svg?kill_cache=1)](https://search.maven.org/artifact/com.github.poslegm/munit-zio_3/)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.poslegm/munit-zio_3?style=flat-square)](https://index.scala-lang.org/poslegm/munit-zio)
 
 Library published for Scala 3, 2.13, 2.12.
 
