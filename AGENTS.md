@@ -18,7 +18,7 @@ Integration library between MUnit and ZIO. sbt crossProject (JVM/JS/Native), Sca
 
 ## Running and verifying
 
-- Run the full cross-version matrix with `sbt "++2.12.21" ci-test` / `sbt "++2.13.18" ci-test` / `sbt "++3.3.9" ci-test` — bare `sbt test` covers only the default Scala version. If these drift, take the versions from `scala212`/`scala213`/`scala3` in `build.sbt`.
+- Run the full cross-version matrix with `sbt "++2.12.21" ci-test` / `sbt "++2.13.18" ci-test` / `sbt "++3.9.0" ci-test` — bare `sbt test` covers only the default Scala version. If these drift, take the versions from `scala212`/`scala213`/`scala3` in `build.sbt`.
 - Run `sbt fmt` before committing — CI's `formatting` job runs `sbt fmtCheck`, which `ci-test` does not cover.
 - `Test / parallelExecution := false` in `build.sbt` is deliberate (MUnit requirement) — do not remove.
 

@@ -7,7 +7,7 @@ Integration library between [MUnit](https://scalameta.org/munit) and
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.poslegm/munit-zio_3?style=flat-square)](https://index.scala-lang.org/poslegm/munit-zio)
 
-Library published for Scala 3, 2.13, 2.12.
+Library published for Scala 3, 2.13, 2.12. Requires JDK 17+; on Scala 3, requires Scala 3.9+.
 
 ### sbt
 
