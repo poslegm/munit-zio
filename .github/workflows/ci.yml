@@ -12,9 +12,9 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                java: [11]
+                java: [17]
                 os: [ubuntu-latest, windows-2025]
-                scala: ["2.12.21", "2.13.18", "3.3.7"]
+                scala: ["2.12.21", "2.13.18", "3.9.0"]
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
             - uses: actions/setup-java@v5
               with:
                   distribution: temurin
-                  java-version: 11
+                  java-version: 17
                   cache: sbt
             - uses: sbt/setup-sbt@v1
             - run: sbt fmtCheck

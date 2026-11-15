@@ -16,11 +16,11 @@ inThisBuild(
 
 val scala212 = "2.12.21"
 val scala213 = "2.13.18"
-val scala3   = "3.3.9"
+val scala3   = "3.9.0"
 
 lazy val Version = new {
   val munit         = "1.3.6"
-  val zio           = "2.1.26"
+  val zio           = "2.1.27"
   val scalaJavaTime = "2.10.0"
 }
 
@@ -39,23 +39,23 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     libraryDependencies += "com.github.sbt" % "junit-interface" % "0.13.3" % "test",
     scalaVersion                           := scala3,
     scalacOptions ++= Seq(
-      "-Xfatal-warnings",
       "-deprecation",
       "-unchecked"
     ),
     scalacOptions ++= {
       CrossVersion.partialVersion(scalaVersion.value) match {
         case Some((2, 12)) =>
-          Seq("-Xsource:3")
+          Seq("-Xfatal-warnings", "-Xsource:3")
         case Some((2, 13)) =>
           Seq(
+            "-Xfatal-warnings",
             "-Xsource:3",
             "-Wdead-code",
             "-Wextra-implicit",
             "-Wunused",
             "-Ywarn-value-discard"
           )
-        case _             => Seq("-explain", "-source:3.0-migration")
+        case _             => Seq("-Werror", "-explain", "-source:3.0-migration")
       }
     },
     crossScalaVersions                     := Seq(scala3, scala212, scala213),
@@ -65,6 +65,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform, NativePlatform)
     ),
     testFrameworks += new TestFramework("munit.Framework")
   )
+  .jvmSettings(scalacOptions ++= Seq("-release", "17"))
   .jsSettings(crossSettings)
   .nativeSettings(crossSettings)
 
