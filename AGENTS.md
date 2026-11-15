@@ -1,9 +1,9 @@
 <!-- bmad:context -->
-<!-- Verified 2026-08-30 against ab5857dd0f91107093885b4aa336fe6752e5a1dc. Managed by bmad-project-context; edits inside this block are replaced on refresh. Keep anything you want preserved outside the markers. -->
+<!-- Verified 2026-11-15 against e855639df76c69eebd1cd08ac1f08dff7c7a3c24. Managed by bmad-project-context; edits inside this block are replaced on refresh. Keep anything you want preserved outside the markers. -->
 
 ## munit-zio
 
-Integration library between MUnit and ZIO. sbt crossProject (JVM/JS/Native), Scala 3/2.13/2.12. Public API docs live in `README.md`; MUnit concepts in https://scalameta.org/munit/docs/getting-started.html.
+Integration library between MUnit and ZIO. sbt crossProject (JVM/JS/Native), Scala 3/2.13/2.12. Public API docs live in `README.md`.
 
 ## Policy
 
@@ -18,7 +18,8 @@ Integration library between MUnit and ZIO. sbt crossProject (JVM/JS/Native), Sca
 
 ## Running and verifying
 
-- Run the full cross-version matrix with `sbt "++2.12.21" ci-test` / `sbt "++2.13.18" ci-test` / `sbt "++3.3.7" ci-test` — bare `sbt test` covers only the default Scala version.
+- Run the full cross-version matrix with `sbt "++2.12.21" ci-test` / `sbt "++2.13.18" ci-test` / `sbt "++3.3.9" ci-test` — bare `sbt test` covers only the default Scala version. If these drift, take the versions from `scala212`/`scala213`/`scala3` in `build.sbt`.
+- Run `sbt fmt` before committing — CI's `formatting` job runs `sbt fmtCheck`, which `ci-test` does not cover.
 - `Test / parallelExecution := false` in `build.sbt` is deliberate (MUnit requirement) — do not remove.
 
 ## Conventions that differ from defaults
